@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stylish Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .calculator {
+            background: rgba(34, 34, 34, 0.9);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            animation: slideIn 1s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .display {
+            width: 100%;
+            height: 70px;
+            background: #111;
+            color: #0f0;
+            font-size: 2.2rem;
+            text-align: right;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            box-shadow: inset 0 0 15px #0f0;
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                box-shadow: inset 0 0 10px #0f0;
+            }
+            to {
+                box-shadow: inset 0 0 20px #00ff99;
+            }
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 75px);
+            grid-gap: 12px;
+        }
+        
+        button {
+            position: relative;
+            overflow: hidden;
+            height: 65px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 255, 100, 0.6);
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        button::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+        
+        button:active::after {
+            width: 200%;
+            height: 200%;
+            opacity: 0;
+        }
+        
+        .operator {
+            background: linear-gradient(135deg, #f57c00, #ff9800);
+            color: white;
+        }
+        
+        .equal {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #0288d1, #03a9f4);
+            font-weight: bold;
+            animation: bounce 1s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.05);
+            }
+        }
+        
+        .clear {
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+        }
+        
+        .delete {
+            background: linear-gradient(135deg, #8e24aa, #ab47bc);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button onclick="appendValue('/')">÷</button>
+            <button onclick="appendValue('*')">×</button>
+            <button class="delete" onclick="deleteLast()">⌫</button>
+
+            <button onclick="appendValue('7')">7</button>
+            <button onclick="appendValue('8')">8</button>
+            <button onclick="appendValue('9')">9</button>
+            <button class="operator" onclick="appendValue('-')">−</button>
+
+            <button onclick="appendValue('4')">4</button>
+            <button onclick="appendValue('5')">5</button>
+            <button onclick="appendValue('6')">6</button>
+            <button class="operator" onclick="appendValue('+')">+</button>
+
+            <button onclick="appendValue('1')">1</button>
+            <button onclick="appendValue('2')">2</button>
+            <button onclick="appendValue('3')">3</button>
+            <button onclick="appendValue('.')">.</button>
+
+            <button onclick="appendValue('0')">0</button>
+            <button class="equal" onclick="calculateResult()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById("display");
+
+        function appendValue(value) {
+            if (display.innerText === "0") display.innerText = "";
+            display.innerText += value;
+        }
+
+        function clearDisplay() {
+            display.innerText = "0";
+        }
+
+        function deleteLast() {
+            display.innerText = display.innerText.slice(0, -1) || "0";
+        }
+
+        function calculateResult() {
+            try {
+                display.innerText = eval(display.innerText.replace("×", "*").replace("÷", "/"));
+            } catch {
+                display.innerText = "Error";
+            }
+        }
+
+        document.addEventListener("keydown", (event) => {
+            if ((event.key >= "0" && event.key <= "9") || ["+", "-", "*", "/", "."].includes(event.key)) {
+                appendValue(event.key);
+            } else if (event.key === "Enter") {
+                calculateResult();
+            } else if (event.key === "Backspace") {
+                deleteLast();
+            } else if (event.key === "Escape") {
+                clearDisplay();
+            }
+        });
+    </script>
+</body>
+
+</html>
